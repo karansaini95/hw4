@@ -1,12 +1,20 @@
 class PlacesController < ApplicationController
 
-  def index
-    @places = Place.all
+   def index
+    if @current_user
+      @places = Place.all
+    end
+    
   end
 
   def show
-    @place = Place.find_by({ "id" => params["id"] })
-    @posts = Post.where({ "place_id" => @place["id"] })
+    if @current_user
+      @place = Place.find_by({ "id" => params["id"] })
+      @posts = Post.where({ "place_id" => @place["id"] })
+      @posts_currentuser = @posts.where({"user_id"=> @current_user["id"]})
+    else
+      flash["notice"] = "Login first."
+    end
   end
 
   def new
@@ -19,5 +27,4 @@ class PlacesController < ApplicationController
     @place.save
     redirect_to "/places"
   end
-
 end
